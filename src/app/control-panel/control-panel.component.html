@@ -1,7 +1,7 @@
 <p>control-panel works!</p>
 <kendo-grid 
 [data]="gridData"
-
+[kendoGridReactiveEditing]="createFormGroup"
 [kendoGridBinding]="gridView"
 kendoGridSelectBy="id"
 [(selectedKeys)]="mySelection"
@@ -13,22 +13,33 @@ kendoGridSelectBy="id"
 [resizable]="true"
 [height]="500"
 [columnMenu]="{ filter: true }"
-
+(remove)="onRemove($event)"
+(add)="onAdd($event)"
 
 >
+
 <ng-template kendoGridToolbarTemplate>
     <kendo-textbox
       [style.width.px]="165"
       placeholder="Search in all columns..."
       (valueChange)="onFilter($event)"
     ></kendo-textbox>
+    <button kendoGridAddCommand >Add new</button>
+        <div *ngIf="formGroup">
+          <button kendoButton [disabled]="!formGroup.valid" >
+            <!-- (click)="saveRow()" -->
+            Save
+          </button>
+          <!-- (click)="cancelHandler()" -->
+          <button kendoButton themeColor="primary">
+            Cancel
+          </button>
+        </div>
     <kendo-grid-spacer></kendo-grid-spacer>
   </ng-template>
 
 
     <kendo-grid-column field="id" title="ID"> </kendo-grid-column>
-    <!-- <kendo-grid-column field="ProductName" title="Name"> </kendo-grid-column> -->
-    <!-- <kendo-grid-column field="Category.CategoryName" title="Category"> </kendo-grid-column> -->
     <kendo-grid-column field="userName" title="User Name"> </kendo-grid-column>
     <kendo-grid-column field="email" title="email"> </kendo-grid-column>
     <kendo-grid-command-column title="command" [width]="220">

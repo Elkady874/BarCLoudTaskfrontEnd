@@ -1,12 +1,14 @@
 import { Component, ViewChild } from '@angular/core';
-import { DataBindingDirective, GridModule } from "@progress/kendo-angular-grid";
+import { AddEvent, DataBindingDirective, RemoveEvent } from "@progress/kendo-angular-grid";
 import { StocksService } from '../Services/Stock/stocks.service';
 import { Ticker } from '../Types/Ticker';
 import { UsersService } from '../Services/User/users.service';
 import { User } from '../Types/User';
 import { clients } from '../ConstantsData/clients';
 import { process } from '@progress/kendo-data-query';
-import { FormGroup, Validators, FormBuilder } from "@angular/forms";
+import { FormGroup, Validators, FormBuilder, FormControl } from "@angular/forms";
+import { CreateFormGroupArgs } from "@progress/kendo-angular-grid";
+
 
  
 @Component({
@@ -16,21 +18,22 @@ import { FormGroup, Validators, FormBuilder } from "@angular/forms";
 })
 export class ControlPanelComponent {
   
-  @ViewChild(DataBindingDirective) dataBinding = DataBindingDirective;
+  // @ViewChild(DataBindingDirective) dataBinding = DataBindingDirective;
   gridData:any;
   gridView:User[]=[];
-   mySelection: string[] = [];
+  mySelection: string[] = [];
    
    public formGroup: FormGroup = this.formBuilder.group({
     ProductName: "",
   });
  
   constructor(private formBuilder: FormBuilder, private userService:UsersService) {
-   
+    this.createFormGroup = this.createFormGroup.bind(this);
+
   }
 
   
-  public ngOnInit(){
+    ngOnInit(){
    this.userService.getUsers().subscribe(
       e=>{this.gridData=e.users
       this.gridView = this.gridData}
@@ -39,7 +42,7 @@ export class ControlPanelComponent {
 
   }
 
-  public onFilter(value: Event): void {
+    onFilter(value: Event): void {
     const inputValue = value;
     
   this.gridView = process(this.gridData, {
@@ -67,6 +70,34 @@ export class ControlPanelComponent {
 
   //this.dataBinding.skip = 0;
 }
+
+   onRemove(args: RemoveEvent){
+  //  this.editService.remove(args.dataItem);
+
+    console.log("testSuccess")
+   }
+
+   
+   onAdd(args: AddEvent){
+    //  this.editService.remove(args.dataItem);
+  return
+      console.log(args)
+     }
+    createFormGroup(args: CreateFormGroupArgs): FormGroup {
+    const item = args.isNew ? {} : args.dataItem;
+    this.formGroup = this.formBuilder.group({
+      email: new FormControl(
+      item.email,
+      Validators.compose([
+        Validators.required,
+        Validators.pattern("[A-Za-z0-9._%-]+@[A-Za-z0-9._%-]+\\.[a-z]{2,3}"),
+      ])
+    ),
+      userName: item.userName,
+    });
+
+    return this.formGroup;
+  }
 
 
 }
