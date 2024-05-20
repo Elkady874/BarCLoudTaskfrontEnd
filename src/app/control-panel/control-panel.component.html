@@ -1,0 +1,46 @@
+<p>control-panel works!</p>
+<kendo-grid 
+[data]="gridData"
+
+[kendoGridBinding]="gridView"
+kendoGridSelectBy="id"
+[(selectedKeys)]="mySelection"
+[pageSize]="10"
+[filterable]="true"
+[pageable]="true"
+[sortable]="true"
+[reorderable]="true"
+[resizable]="true"
+[height]="500"
+[columnMenu]="{ filter: true }"
+
+
+>
+<ng-template kendoGridToolbarTemplate>
+    <kendo-textbox
+      [style.width.px]="165"
+      placeholder="Search in all columns..."
+      (valueChange)="onFilter($event)"
+    ></kendo-textbox>
+    <kendo-grid-spacer></kendo-grid-spacer>
+  </ng-template>
+
+
+    <kendo-grid-column field="id" title="ID"> </kendo-grid-column>
+    <!-- <kendo-grid-column field="ProductName" title="Name"> </kendo-grid-column> -->
+    <!-- <kendo-grid-column field="Category.CategoryName" title="Category"> </kendo-grid-column> -->
+    <kendo-grid-column field="userName" title="User Name"> </kendo-grid-column>
+    <kendo-grid-column field="email" title="email"> </kendo-grid-column>
+    <kendo-grid-command-column title="command" [width]="220">
+        <ng-template kendoGridCellTemplate let-isNew="isNew">
+          <button kendoGridEditCommand [primary]="true">Edit</button>
+          <button kendoGridRemoveCommand>Remove</button>
+          <button kendoGridSaveCommand [disabled]="formGroup.invalid">
+            {{ isNew ? "Add" : "Update" }}
+          </button>
+          <button kendoGridCancelCommand>
+            {{ isNew ? "Discard changes" : "Cancel" }}
+          </button>
+        </ng-template>
+      </kendo-grid-command-column>
+</kendo-grid>
