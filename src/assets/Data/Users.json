@@ -4,7 +4,33 @@
     {
         "id":1,
         "userName":"moaz",
-        "email":"elkady874@gmail.com"
+        "email":"elkady874@gmail.com",
+        "stocks":[ {
+            "ticker": "A",
+            "name": "Agilent Technologies Inc.",
+            "market": "stocks",
+            "locale": "us",
+            "primary_exchange": "XNYS",
+            "type": "CS",
+            "active": true,
+            "currency_name": "usd",
+            "cik": "0001090872",
+            "composite_figi": "BBG000C2V3D6",
+            "share_class_figi": "BBG001SCTQY4",
+            "last_updated_utc": "2024-05-17T00:00:00Z"
+          },
+          {
+            "ticker": "AA",
+            "name": "ALCOA INC",
+            "market": "stocks",
+            "locale": "us",
+            "primary_exchange": "XNYS",
+            "type": "CS",
+            "active": true,
+            "currency_name": "usd",
+            "cik": "0000004281",
+            "last_updated_utc": "2016-05-18T00:00:00Z"
+          }]
     },
     {
         "id":2,

@@ -1,57 +1,54 @@
 <p>control-panel works!</p>
-<kendo-grid 
-[data]="gridData"
-[kendoGridReactiveEditing]="createFormGroup"
-[kendoGridBinding]="gridView"
-kendoGridSelectBy="id"
-[(selectedKeys)]="mySelection"
-[pageSize]="10"
-[filterable]="true"
-[pageable]="true"
-[sortable]="true"
-[reorderable]="true"
-[resizable]="true"
-[height]="500"
-[columnMenu]="{ filter: true }"
-(remove)="onRemove($event)"
-(add)="onAdd($event)"
+<kendo-grid [data]="gridData" [kendoGridReactiveEditing]="createFormGroup" [kendoGridBinding]="gridView"
+    kendoGridSelectBy="id" [(selectedKeys)]="mySelection" [pageSize]="10"[pageable]="true"
+    [sortable]="true" [reorderable]="true" [resizable]="true" [height]="500" [columnMenu]="{ filter: true }"
+    (remove)="onRemove($event)" (add)="onAdd($event)">
 
->
-
-<ng-template kendoGridToolbarTemplate>
-    <kendo-textbox
-      [style.width.px]="165"
-      placeholder="Search in all columns..."
-      (valueChange)="onFilter($event)"
-    ></kendo-textbox>
-    <button kendoGridAddCommand >Add new</button>
+    <ng-template kendoGridToolbarTemplate>
+        <kendo-textbox [style.width.px]="165" placeholder="Search in all columns..."
+            (valueChange)="onFilter($event)"></kendo-textbox>
+        <button kendoGridAddCommand>Add new</button>
         <div *ngIf="formGroup">
-          <button kendoButton [disabled]="!formGroup.valid" >
-            <!-- (click)="saveRow()" -->
-            Save
-          </button>
-          <!-- (click)="cancelHandler()" -->
-          <button kendoButton themeColor="primary">
-            Cancel
-          </button>
+            <button kendoButton [disabled]="!formGroup.valid">
+                <!-- (click)="saveRow()" -->
+                Save
+            </button>
+            <!-- (click)="cancelHandler()" -->
+            <button kendoButton themeColor="primary">
+                Cancel
+            </button>
         </div>
-    <kendo-grid-spacer></kendo-grid-spacer>
-  </ng-template>
+        <kendo-grid-spacer></kendo-grid-spacer>
+    </ng-template>
 
 
     <kendo-grid-column field="id" title="ID"> </kendo-grid-column>
     <kendo-grid-column field="userName" title="User Name"> </kendo-grid-column>
     <kendo-grid-column field="email" title="email"> </kendo-grid-column>
+    <kendo-grid-column field="stocks" title="Stocks">
+        <ng-template kendoGridCellTemplate let-gridRow>
+            <kendo-multiselect [data]="stockss" [(ngModel)]="gridRow.stocks" textField="name"
+                valueField="ticker"></kendo-multiselect>
+        </ng-template>
+
+        <ng-template kendoGridEditTemplate let-formGroup="formGroup" >
+            <kendo-multiselect [data]="stockss" [(ngModel)]="formGroup.get('stocks').value" textField="name"
+                valueField="ticker" > 
+            </kendo-multiselect>
+        </ng-template>
+
+
+    </kendo-grid-column>
     <kendo-grid-command-column title="command" [width]="220">
         <ng-template kendoGridCellTemplate let-isNew="isNew">
-          <button kendoGridEditCommand [primary]="true">Edit</button>
-          <button kendoGridRemoveCommand>Remove</button>
-          <button kendoGridSaveCommand [disabled]="formGroup.invalid">
-            {{ isNew ? "Add" : "Update" }}
-          </button>
-          <button kendoGridCancelCommand>
-            {{ isNew ? "Discard changes" : "Cancel" }}
-          </button>
+            <button kendoGridEditCommand [primary]="true">Edit</button>
+            <button kendoGridRemoveCommand>Remove</button>
+            <button kendoGridSaveCommand [disabled]="formGroup.invalid">
+                {{ isNew ? "Add" : "Update" }}
+            </button>
+            <button kendoGridCancelCommand>
+                {{ isNew ? "Discard changes" : "Cancel" }}
+            </button>
         </ng-template>
-      </kendo-grid-command-column>
+    </kendo-grid-command-column>
 </kendo-grid>
