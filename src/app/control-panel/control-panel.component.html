@@ -12,16 +12,7 @@
         <kendo-textbox [style.width.px]="165" placeholder="Search in all columns..."
             (valueChange)="onFilter($event)"></kendo-textbox>
         <button kendoGridAddCommand>Add new</button>
-        <div *ngIf="formGroup">
-            <button kendoButton [disabled]="!formGroup.valid">
-                <!-- (click)="saveRow()" -->
-                Save
-            </button>
-            <!-- (click)="cancelHandler()" -->
-            <button kendoButton themeColor="primary">
-                Cancel
-            </button>
-        </div>
+ 
         <kendo-grid-spacer></kendo-grid-spacer>
     </ng-template>
 
