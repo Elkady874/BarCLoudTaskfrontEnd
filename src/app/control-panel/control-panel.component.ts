@@ -1,5 +1,5 @@
 import { Component, ViewChild } from '@angular/core';
-import { AddEvent, DataBindingDirective, RemoveEvent } from "@progress/kendo-angular-grid";
+import { AddEvent, DataBindingDirective, EditEvent, RemoveEvent, SaveEvent } from "@progress/kendo-angular-grid";
 import { StocksService } from '../Services/Stock/stocks.service';
 import { Ticker } from '../Types/Ticker';
 import { UsersService } from '../Services/User/users.service';
@@ -8,6 +8,8 @@ import { clients } from '../ConstantsData/clients';
 import { process } from '@progress/kendo-data-query';
 import { FormGroup, Validators, FormBuilder, FormControl } from "@angular/forms";
 import { CreateFormGroupArgs } from "@progress/kendo-angular-grid";
+import { tick } from '@angular/core/testing';
+import { concatMap, tap } from 'rxjs';
 
 
 
@@ -22,47 +24,7 @@ export class ControlPanelComponent {
   gridData: any;
   gridView: User[] = [];
   mySelection: string[] = [];
-  test: any
-  stockss = [{
-    "ticker": "A",
-    "name": "Agilent Technologies Inc.",
-    "market": "stocks",
-    "locale": "us",
-    "primary_exchange": "XNYS",
-    "type": "CS",
-    "active": true,
-    "currency_name": "usd",
-    "cik": "0001090872",
-    "composite_figi": "BBG000C2V3D6",
-    "share_class_figi": "BBG001SCTQY4",
-    "last_updated_utc": "2024-05-17T00:00:00Z"
-  },
-  {
-    "ticker": "AA",
-    "name": "ALCOA INC",
-    "market": "stocks",
-    "locale": "us",
-    "primary_exchange": "XNYS",
-    "type": "CS",
-    "active": true,
-    "currency_name": "usd",
-    "cik": "0000004281",
-    "last_updated_utc": "2016-05-18T00:00:00Z"
-  },
-  {
-    "ticker": "AAA",
-    "name": "Alternative Access First Priority CLO Bond ETF",
-    "market": "stocks",
-    "locale": "us",
-    "primary_exchange": "ARCX",
-    "type": "ETF",
-    "active": true,
-    "currency_name": "usd",
-    "cik": "0001776878",
-    "composite_figi": "BBG01B0JRCS6",
-    "share_class_figi": "BBG01B0JRCT5",
-    "last_updated_utc": "2024-05-17T00:00:00Z"
-  }]
+   availAbleStocks :Ticker[]=[]
   formGroup: FormGroup = this.formBuilder.group({
     email: new FormControl(
       "",
@@ -71,27 +33,52 @@ export class ControlPanelComponent {
         Validators.pattern("[A-Za-z0-9._%-]+@[A-Za-z0-9._%-]+\\.[a-z]{2,3}"),
       ])
     ),
-    userName: "",
-    stocks: this.stockss
+    firstName: new FormControl(
+      "",
+      Validators.compose([
+        Validators.required,
+      ])
+    ),
+    lastName: new FormControl(
+      "",
+      Validators.compose([
+        Validators.required,
+      ])
+    ),
+    phoneNumber: new FormControl(
+      "",
+      Validators.compose([
+        Validators.required,
+        Validators.pattern("^01[0125][0-9]{8}$")
+      ])
+    ),
+    registeredStock:new FormControl([])
   });
 
-  constructor(private formBuilder: FormBuilder, private userService: UsersService) {
+  constructor(private formBuilder: FormBuilder, private userService: UsersService,private stockService:StocksService) {
+   stockService.getTickers().pipe(
+     concatMap( (stocks:Ticker[])=>{
+      this.availAbleStocks=stocks
+      return this.userService.getUsers();
+    })
+   
+  ).subscribe(
+    e => {
+      this.gridData = e 
+      this.gridView = this.gridData
+    }
+  );
+
     this.createFormGroup = this.createFormGroup.bind(this);
-    console.log(this.formBuilder)
-
+ 
   }
 
 
-  ngOnInit() {
-    this.userService.getUsers().subscribe(
-      e => {
-        this.gridData = e.users
-        this.gridView = this.gridData
-      }
-
-    )
+  ngOnInit() { 
+   
 
   }
+
 
   onFilter(value: Event): void {
     const inputValue = value;
@@ -106,7 +93,17 @@ export class ControlPanelComponent {
             value: inputValue,
           },
           {
-            field: "userName",
+            field: "firstName",
+            operator: "contains",
+            value: inputValue,
+          },
+          {
+            field: "lastName",
+            operator: "contains",
+            value: inputValue,
+          },
+          {
+            field: "phoneNumber",
             operator: "contains",
             value: inputValue,
           },
@@ -125,9 +122,23 @@ export class ControlPanelComponent {
   onRemove(args: RemoveEvent) {
     //  this.editService.remove(args.dataItem);
 
-    console.log(this.mySelection)
+    this.userService.removeUsers(args.dataItem.id).subscribe()
   }
+  onEdit(args: EditEvent) {
+    //  this.editService.remove(args.dataItem);
 
+   }
+  onSave(args: SaveEvent) {
+    //  this.editService.remove(args.dataItem);
+  const stockArray = args.formGroup.get('registeredStock')?.value as any
+  args.dataItem.registeredStock=stockArray
+    if(!args.isNew){
+      this.userService.updateUsers(args.dataItem).subscribe()
+    }else{
+      this.userService.addUsers(args.dataItem).subscribe(e=> args.dataItem.id=e)
+    }     
+ 
+  }
 
   onAdd(args: AddEvent) {
     //  this.editService.remove(args.dataItem);
@@ -144,19 +155,33 @@ export class ControlPanelComponent {
           Validators.pattern("[A-Za-z0-9._%-]+@[A-Za-z0-9._%-]+\\.[a-z]{2,3}"),
         ])
       ),
-      userName: new FormControl(
-        item.userName,
+      firstName: new FormControl(
+        item.firstName,
         Validators.compose([
           Validators.required,
         ])
       ),
-      stocks: item.stocks
+      lastName: new FormControl(
+        item.lastName,
+        Validators.compose([
+          Validators.required,
+        ])
+      ),
+      phoneNumber: new FormControl(
+        item.phoneNumber,
+        Validators.compose([
+          Validators.required,
+          Validators.pattern("^01[0125][0-9]{8}$")
+        ])
+      ),
+      registeredStock: new FormControl( item.registeredStock)
     });
-    console.log(item.stocks)
-    console.log(this.formGroup.get('stocks')!.value)
+    console.log(item.registeredStock)
 
     return this.formGroup;
   }
 
+  stockValueChanged(e:any,id:any) {
+   }
 
 }

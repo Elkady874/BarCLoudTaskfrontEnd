@@ -1,7 +1,11 @@
+import { Ticker } from "./Ticker"
+
 export type User =  
 {
    id:number, 
-   userName:string,
-   email:string
-   stocks:any
+   firstName:string,
+   lastName:string,
+   phoneNumber:string,
+   email:string,
+   registeredStock:Ticker[]
 }

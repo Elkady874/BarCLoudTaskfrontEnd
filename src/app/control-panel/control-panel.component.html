@@ -2,7 +2,11 @@
 <kendo-grid [data]="gridData" [kendoGridReactiveEditing]="createFormGroup" [kendoGridBinding]="gridView"
     kendoGridSelectBy="id" [(selectedKeys)]="mySelection" [pageSize]="10"[pageable]="true"
     [sortable]="true" [reorderable]="true" [resizable]="true" [height]="500" [columnMenu]="{ filter: true }"
-    (remove)="onRemove($event)" (add)="onAdd($event)">
+    (remove)="onRemove($event)" 
+    (add)="onAdd($event)"
+    (edit)="onEdit($event)"
+    (save)="onSave($event)"
+    >
 
     <ng-template kendoGridToolbarTemplate>
         <kendo-textbox [style.width.px]="165" placeholder="Search in all columns..."
@@ -23,17 +27,19 @@
 
 
     <kendo-grid-column field="id" title="ID"> </kendo-grid-column>
-    <kendo-grid-column field="userName" title="User Name"> </kendo-grid-column>
+    <kendo-grid-column field="firstName" title="First Name"> </kendo-grid-column>
+    <kendo-grid-column field="lastName" title="Last Name"> </kendo-grid-column>
+    <kendo-grid-column field="phoneNumber" title="Phone Number"> </kendo-grid-column>
     <kendo-grid-column field="email" title="email"> </kendo-grid-column>
-    <kendo-grid-column field="stocks" title="Stocks">
+    <kendo-grid-column field="registeredStock" title="Stocks">
         <ng-template kendoGridCellTemplate let-gridRow>
-            <kendo-multiselect [data]="stockss" [(ngModel)]="gridRow.stocks" textField="name"
-                valueField="ticker"></kendo-multiselect>
+            <kendo-multiselect [data]="availAbleStocks" [(ngModel)]="gridRow.registeredStock" textField="name"
+                valueField="ticker" [disabled]="true"></kendo-multiselect>
         </ng-template>
 
-        <ng-template kendoGridEditTemplate let-formGroup="formGroup" >
-            <kendo-multiselect [data]="stockss" [(ngModel)]="formGroup.get('stocks').value" textField="name"
-                valueField="ticker" > 
+        <ng-template kendoGridEditTemplate   let-gridRow >
+            <kendo-multiselect [data]="availAbleStocks"    [(ngModel)]="formGroup.get('registeredStock')!.value" textField="name"
+                valueField="ticker" (valueChange)="stockValueChanged($event,gridRow)" > 
             </kendo-multiselect>
         </ng-template>
 
